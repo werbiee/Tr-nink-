@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Můj Trénink</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --text-color: #f8fafc;
+      --text-muted: #94a3b8;
+      --success-color: #22c55e;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      padding-bottom: 140px;
+    }
+    h1 { text-align: center; color: var(--accent-color); font-size: 22px; margin-bottom: 5px; }
+    .subtitle { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+    
+    /* Timer Sticky Box */
+    .timer-container {
+      position: fixed;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 400px;
+      background: var(--card-bg);
+      border: 2px solid var(--accent-color);
+      border-radius: 16px;
+      padding: 12px 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+    }
+    .timer-display { font-size: 26px; font-weight: bold; font-family: monospace; }
+    .timer-controls { display: flex; gap: 6px; align-items: center; }
+    .timer-btn {
+      background: var(--accent-color);
+      color: #000;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .timer-btn.reset { background: #ef4444; color: white; }
+    .preset-btn {
+      background: #334155;
+      color: var(--text-color);
+      border: 1px solid #475569;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    /* Day Card */
+    .day-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .day-title { font-size: 17px; font-weight: bold; color: var(--accent-color); }
+    .clear-btn {
+      background: transparent;
+      border: 1px solid #475569;
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    
+    /* Exercise Item */
+    .exercise-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #334155;
+    }
+    .exercise-item:last-child { border-bottom: none; }
+    .exercise-info { display: flex; flex-direction: column; }
+    .exercise-name { font-weight: 600; font-size: 15px; }
+    .exercise-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    
+    /* Custom Checkbox */
+    input[type="checkbox"] {
+      width: 24px;
+      height: 24px;
+      accent-color: var(--success-color);
+      cursor: pointer;
+    }
+    .completed { text-decoration: line-through; opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+  <h1>🏋️ Trénink 186 cm / 78 kg</h1>
+  <div class="subtitle">Cíl: Zpevnění & Pomalý náběr svalů</div>
+
+  <div id="app"></div>
+
+  <!-- Stopky / Odpočet -->
+  <div class="timer-container">
+    <div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;">PAUZA</div>
+      <div class="timer-display" id="time">01:30</div>
+      <div style="margin-top: 4px; display: flex; gap: 4px;">
+        <button class="preset-btn" onclick="setPreset(60)">60s</button>
+        <button class="preset-btn" onclick="setPreset(90)">90s</button>
+      </div>
+    </div>
+    <div class="timer-controls">
+      <button class="timer-btn" onclick="toggleTimer()" id="startBtn">Start</button>
+      <button class="timer-btn reset" onclick="resetTimer()">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    const workoutData = [
+      {
+        id: "day1",
+        day: "Den 1: Vršek (Hrudník, Záda, Ramena)",
+        exercises: [
+          { id: "d1_e1", name: "Kliky (střední šířka)", meta: "4 série × 8–12 op. (pomalý pohyb dolů)" },
+          { id: "d1_e2", name: "Přítahy pod stolem / ručník", meta: "4 série × 8–12 op. (stiskni lopatky)" },
+          { id: "d1_e3", name: "Pike Push-ups (Ramena)", meta: "3 série × 6–10 op." },
+          { id: "d1_e4", name: "Dips o židli / gauč", meta: "3 série × 10–12 op." },
+          { id: "d1_e5", name: "Plank (Prkno)", meta: "3 série × 45–60 s" }
+        ]
+      },
+      {
+        id: "day2",
+        day: "Den 2: Nohy + Břicho",
+        exercises: [
+          { id: "d2_e1", name: "Hluboké dřepy", meta: "4 série × 15–20 op." },
+          { id: "d2_e2", name: "Výpady vzad", meta: "3 série × 10–12 / noha" },
+          { id: "d2_e3", name: "Rumunský deadlift na 1 noze", meta: "3 série × 10 / noha" },
+          { id: "d2_e4", name: "Glute Bridge (Pánev)", meta: "3 série × 15–20 op." },
+          { id: "d2_e5", name: "Zvedání nohou v leže", meta: "3 série × 12–15 op." }
+        ]
+      },
+      {
+        id: "day3",
+        day: "Den 3: Celé tělo + Kondice",
+        exercises: [
+          { id: "d3_e1", name: "Angličáky (Burpees)", meta: "3 série × 8–10 op." },
+          { id: "d3_e2", name: "Široké kliky", meta: "3 série × 10–12 op." },
+          { id: "d3_e3", name: "Bulharské dřepy (noha vzadu)", meta: "3 série × 8–10 / noha" },
+          { id: "d3_e4", name: "Horolezec (Mountain Climbers)", meta: "3 série × 30 s" },
+          { id: "d3_e5", name: "Boční plank", meta: "3 série × 30 s / strana" }
+        ]
+      }
+    ];
+
+    function renderApp() {
+      const app = document.getElementById('app');
+      const savedState = JSON.parse(localStorage.getItem('workoutState') || '{}');
+      
+      app.innerHTML = workoutData.map(group => `
+        <div class="day-card">
+          <div class="day-header">
+            <span class="day-title">${group.day}</span>
+            <button class="clear-btn" onclick="clearDay('${group.id}')">Reset dne</button>
+          </div>
+          ${group.exercises.map(ex => {
+            const checked = savedState[ex.id] ? 'checked' : '';
+            const completedClass = savedState[ex.id] ? 'completed' : '';
+            return `
+              <div class="exercise-item">
+                <div class="exercise-info ${completedClass}">
+                  <span class="exercise-name">${ex.name}</span>
+                  <span class="exercise-meta">${ex.meta}</span>
+                </div>
+                <input type="checkbox" ${checked} onchange="toggleExercise('${ex.id}')">
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `).join('');
+    }
+
+    function toggleExercise(id) {
+      const savedState = JSON.parse(localStorage.getItem('workoutState') || '{}');
+      savedState[id] = !savedState[id];
+      localStorage.setItem('workoutState', JSON.stringify(savedState));
+      renderApp();
+    }
+
+    function clearDay(dayId) {
+      const day = workoutData.find(d => d.id === dayId);
+      if (!day) return;
+      const savedState = JSON.parse(localStorage.getItem('workoutState') || '{}');
+      day.exercises.forEach(ex => delete savedState[ex.id]);
+      localStorage.setItem('workoutState', JSON.stringify(savedState));
+      renderApp();
+    }
+
+    /* Časovač */
+    let defaultTime = 90;
+    let timeLeft = defaultTime;
+    let timerInterval = null;
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+      const secs = (timeLeft % 60).toString().padStart(2, '0');
+      document.getElementById('time').innerText = `${mins}:${secs}`;
+    }
+
+    function setPreset(seconds) {
+      defaultTime = seconds;
+      resetTimer();
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('startBtn');
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btn.innerText = 'Start';
+      } else {
+        btn.innerText = 'Pauza';
+        timerInterval = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            btn.innerText = 'Start';
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            alert('Čas na další sérii!');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timeLeft = defaultTime;
+      document.getElementById('startBtn').innerText = 'Start';
+      updateTimerDisplay();
+    }
+
+    renderApp();
+  </script>
+</body>
+</html>
