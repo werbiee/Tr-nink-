@@ -43,7 +43,7 @@
       color: var(--text-muted);
       padding: 8px 4px;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -62,7 +62,7 @@
     }
     .day-card.rest-day {
       border-left-color: var(--rest-color);
-      opacity: 0.85;
+      opacity: 0.9;
     }
     .day-header {
       display: flex;
@@ -82,15 +82,46 @@
       cursor: pointer;
     }
 
-    /* Exercise Item */
+    /* Exercise Item with Visual Image */
     .exercise-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 0;
+      padding: 10px 0;
       border-bottom: 1px solid #334155;
+      gap: 10px;
     }
     .exercise-item:last-child { border-bottom: none; }
+    
+    .exercise-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    
+    .exercise-icon {
+      width: 44px;
+      height: 44px;
+      background: #0f172a;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid #334155;
+      padding: 4px;
+    }
+    .exercise-icon svg {
+      width: 100%;
+      height: 100%;
+      fill: none;
+      stroke: var(--accent-color);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     .exercise-info { display: flex; flex-direction: column; }
     .exercise-name { font-weight: 600; font-size: 14px; }
     .exercise-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
@@ -100,6 +131,7 @@
       height: 22px;
       accent-color: var(--success-color);
       cursor: pointer;
+      flex-shrink: 0;
     }
     .completed { text-decoration: line-through; opacity: 0.4; }
 
@@ -150,7 +182,6 @@
   <h1>🏋️ Trénink 7 Dní</h1>
   <div class="subtitle">78 kg / 186 cm – Zpevnění & Náběr</div>
 
-  <!-- Výběr Týdne pro Progres -->
   <div class="week-selector">
     <button class="week-btn active" id="w1" onclick="selectWeek(1)">Týden 1</button>
     <button class="week-btn" id="w2" onclick="selectWeek(2)">Týden 2 (+2 op.)</button>
@@ -160,7 +191,6 @@
 
   <div id="app"></div>
 
-  <!-- Stopky / Odpočet -->
   <div class="timer-container">
     <div>
       <div style="font-size: 9px; color: var(--text-muted);">ODPOČÍNEK</div>
@@ -179,16 +209,31 @@
   <script>
     let currentWeek = 1;
 
+    // SVG Ikony pro jednotlivé cviky
+    const icons = {
+      pushup: `<svg viewBox="0 0 24 24"><circle cx="5" cy="7" r="2"/><path d="M2 17l6-3 4 2 8-4"/><path d="M8 14l2 5"/><path d="M12 16l3 4"/></svg>`,
+      pike: `<svg viewBox="0 0 24 24"><circle cx="12" cy="18" r="2"/><path d="M5 20l7-12 7 12"/></svg>`,
+      squat: `<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M8 12l4 2 4-2"/><path d="M9 14l-2 6"/><path d="M15 14l2 6"/></svg>`,
+      lunge: `<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M12 7v5l-4 4v4"/><path d="M12 12l4 3v4"/></svg>`,
+      plank: `<svg viewBox="0 0 24 24"><circle cx="4" cy="11" r="2"/><path d="M2 15h18"/><path d="M6 15v3"/><path d="M18 15v3"/></svg>`,
+      walk: `<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M12 7v6l-3 4"/><path d="M12 13l3 4"/><path d="M10 9l4 2"/></svg>`,
+      pull: `<svg viewBox="0 0 24 24"><circle cx="12" cy="17" r="2"/><path d="M4 6h16"/><path d="M12 15V8"/><path d="M9 11l3-3 3 3"/></svg>`,
+      dips: `<svg viewBox="0 0 24 24"><circle cx="12" cy="6" r="2"/><path d="M6 10v8"/><path d="M18 10v8"/><path d="M9 12h6v4H9z"/></svg>`,
+      burpee: `<svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M12 6v6"/><path d="M8 10l4-2 4 2"/><path d="M9 16l3 5 3-5"/></svg>`,
+      abs: `<svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="2"/><path d="M8 18l5-6 6 2"/></svg>`,
+      rest: `<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`
+    };
+
     const baseSchedule = [
       {
         id: "day1",
         day: "Pondělí: Vršek (Hrudník + Ramena)",
         isRest: false,
         exercises: [
-          { id: "d1_e1", name: "Kliky (střední šířka)", base: "3 série × 10 opakování" },
-          { id: "d1_e2", name: "Pike Push-ups (na ramena)", base: "3 série × 8 opakování" },
-          { id: "d1_e3", name: "Široké kliky", base: "3 série × 10 opakování" },
-          { id: "d1_e4", name: "Plank (Prkno)", base: "3 série × 45 sekund" }
+          { id: "d1_e1", name: "Kliky (střední šířka)", base: "3 série × 10 opakování", icon: icons.pushup },
+          { id: "d1_e2", name: "Pike Push-ups (na ramena)", base: "3 série × 8 opakování", icon: icons.pike },
+          { id: "d1_e3", name: "Široké kliky", base: "3 série × 10 opakování", icon: icons.pushup },
+          { id: "d1_e4", name: "Plank (Prkno)", base: "3 série × 45 sekund", icon: icons.plank }
         ]
       },
       {
@@ -196,10 +241,10 @@
         day: "Úterý: Spodek (Nohy + Střed těla)",
         isRest: false,
         exercises: [
-          { id: "d2_e1", name: "Hluboké dřepy", base: "3 série × 15 opakování" },
-          { id: "d2_e2", name: "Výpady vzad", base: "3 série × 10 / noha" },
-          { id: "d2_e3", name: "Glute Bridge (Pánev)", base: "3 série × 15 opakování" },
-          { id: "d2_e4", name: "Zvedání nohou v leže", base: "3 série × 12 opakování" }
+          { id: "d2_e1", name: "Hluboké dřepy", base: "3 série × 15 opakování", icon: icons.squat },
+          { id: "d2_e2", name: "Výpady vzad", base: "3 série × 10 / noha", icon: icons.lunge },
+          { id: "d2_e3", name: "Glute Bridge (Pánev)", base: "3 série × 15 opakování", icon: icons.plank },
+          { id: "d2_e4", name: "Zvedání nohou v leže", base: "3 série × 12 opakování", icon: icons.abs }
         ]
       },
       {
@@ -207,8 +252,8 @@
         day: "Středa: Aktivní Odpočinek 🧘‍♂️",
         isRest: true,
         exercises: [
-          { id: "d3_e1", name: "Procházka na čerstvém vzduchu", base: "30–45 minut" },
-          { id: "d3_e2", name: "Lehký strečink celého těla", base: "10–15 minut" }
+          { id: "d3_e1", name: "Procházka na čerstvém vzduchu", base: "30–45 minut", icon: icons.walk },
+          { id: "d3_e2", name: "Lehký strečink celého těla", base: "10–15 minut", icon: icons.walk }
         ]
       },
       {
@@ -216,10 +261,10 @@
         day: "Čtvrtek: Vršek (Záda + Biceps + Triceps)",
         isRest: false,
         exercises: [
-          { id: "d4_e1", name: "Inverted Rows (Přítahy ručník/stůl)", base: "3 série × 10 opakování" },
-          { id: "d4_e2", name: "Tricepsové kliky o židli (Dips)", base: "3 série × 12 opakování" },
-          { id: "d4_e3", name: "Izometrický přítah v předklonu", base: "3 série × 30 sekund stisk" },
-          { id: "d4_e4", name: "Boční plank", base: "3 série × 30s / strana" }
+          { id: "d4_e1", name: "Inverted Rows (Přítahy ručník/stůl)", base: "3 série × 10 opakování", icon: icons.pull },
+          { id: "d4_e2", name: "Tricepsové kliky o židli (Dips)", base: "3 série × 12 opakování", icon: icons.dips },
+          { id: "d4_e3", name: "Izometrický přítah v předklonu", base: "3 série × 30 sekund stisk", icon: icons.pull },
+          { id: "d4_e4", name: "Boční plank", base: "3 série × 30s / strana", icon: icons.plank }
         ]
       },
       {
@@ -227,10 +272,10 @@
         day: "Pátek: Celé tělo + Kondice",
         isRest: false,
         exercises: [
-          { id: "d5_e1", name: "Angličáky (Burpees)", base: "3 série × 8 opakování" },
-          { id: "d5_e2", name: "Bulharské dřepy (noha vzadu)", base: "3 série × 8 / noha" },
-          { id: "d5_e3", name: "Horolezec (Mountain Climbers)", base: "3 série × 30 sekund" },
-          { id: "d5_e4", name: "Zkracovačky na břicho", base: "3 série × 15 opakování" }
+          { id: "d5_e1", name: "Angličáky (Burpees)", base: "3 série × 8 opakování", icon: icons.burpee },
+          { id: "d5_e2", name: "Bulharské dřepy (noha vzadu)", base: "3 série × 8 / noha", icon: icons.lunge },
+          { id: "d5_e3", name: "Horolezec (Mountain Climbers)", base: "3 série × 30 sekund", icon: icons.plank },
+          { id: "d5_e4", name: "Zkracovačky na břicho", base: "3 série × 15 opakování", icon: icons.abs }
         ]
       },
       {
@@ -238,8 +283,8 @@
         day: "Sobota: Lehké Kardio / Pohyb 🚶‍♂️",
         isRest: true,
         exercises: [
-          { id: "d6_e1", name: "Svižná procházka nebo kolo", base: "45–60 minut" },
-          { id: "d6_e2", name: "Mobilita kyčlí a ramen", base: "10 minut" }
+          { id: "d6_e1", name: "Svižná procházka nebo kolo", base: "45–60 minut", icon: icons.walk },
+          { id: "d6_e2", name: "Mobilita kyčlí a ramen", base: "10 minut", icon: icons.walk }
         ]
       },
       {
@@ -247,7 +292,7 @@
         day: "Neděle: Plný Odpočinek & Regenerace 💤",
         isRest: true,
         exercises: [
-          { id: "d7_e1", name: "Kvalitní spánek & Dobré jídlo", base: "Náběr sil do nového týdne" }
+          { id: "d7_e1", name: "Kvalitní spánek & Dobré jídlo", base: "Náběr sil do nového týdne", icon: icons.rest }
         ]
       }
     ];
@@ -285,9 +330,14 @@
             const metaText = formatMeta(ex.base, currentWeek);
             return `
               <div class="exercise-item">
-                <div class="exercise-info ${completedClass}">
-                  <span class="exercise-name">${ex.name}</span>
-                  <span class="exercise-meta">${metaText}</span>
+                <div class="exercise-left">
+                  <div class="exercise-icon">
+                    ${ex.icon}
+                  </div>
+                  <div class="exercise-info ${completedClass}">
+                    <span class="exercise-name">${ex.name}</span>
+                    <span class="exercise-meta">${metaText}</span>
+                  </div>
                 </div>
                 <input type="checkbox" ${checked} onchange="toggleExercise('${key}')">
               </div>
