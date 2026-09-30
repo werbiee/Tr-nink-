@@ -82,7 +82,7 @@
       cursor: pointer;
     }
 
-    /* Exercise Item with Larger Image */
+    /* Exercise Item with Larger Embedded Image */
     .exercise-item {
       display: flex;
       align-items: center;
@@ -105,8 +105,8 @@
       height: 75px;
       border-radius: 10px;
       object-fit: contain;
-      background-color: #334155;
-      padding: 4px;
+      background-color: #0f172a;
+      padding: 6px;
       border: 1px solid var(--accent-color);
       flex-shrink: 0;
     }
@@ -198,19 +198,19 @@
   <script>
     let currentWeek = 1;
 
-    // Ověřené a stabilní ikony/obrázky cviků z Wikimedia
+    // Přímé vestavěné SVG vektory znázorňující pohyb (start-cíl) bez nutnosti cizího serveru
     const imgs = {
-      pushup: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Pushups.svg",
-      pike: "https://upload.wikimedia.org/wikipedia/commons/8/87/Pike_push_up.svg",
-      squat: "https://upload.wikimedia.org/wikipedia/commons/8/82/Squat.svg",
-      lunge: "https://upload.wikimedia.org/wikipedia/commons/7/78/Lunge.svg",
-      plank: "https://upload.wikimedia.org/wikipedia/commons/d/df/Plank_exercise.svg",
-      walk: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Walking_icon.svg",
-      pull: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Inverted_row.svg",
-      dips: "https://upload.wikimedia.org/wikipedia/commons/6/68/Triceps_dips.svg",
-      burpee: "https://upload.wikimedia.org/wikipedia/commons/2/23/Burpee.svg",
-      abs: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Crunch_exercise.svg",
-      rest: "https://upload.wikimedia.org/wikipedia/commons/d/df/Plank_exercise.svg"
+      pushup: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'><path d='M20 40 L50 40 L70 50'/><circle cx='15' cy='35' r='5'/><path d='M20 75 L50 75 L80 65' stroke='%2322c55e'/><circle cx='15' cy='70' r='5' fill='%2322c55e'/><path d='M50 45 L50 65' stroke='%2394a3b8' stroke-width='2' stroke-dasharray='4'/></svg>",
+      pike: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'><path d='M25 75 L50 30 L75 75'/><circle cx='50' cy='22' r='5'/><path d='M50 35 L50 55' stroke='%2394a3b8' stroke-width='2' stroke-dasharray='4'/></svg>",
+      squat: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'><circle cx='50' cy='20' r='5'/><path d='M50 25 L50 55 L35 85 M50 55 L65 85'/><path d='M50 35 L50 65' stroke='%2394a3b8' stroke-width='2' stroke-dasharray='4'/></svg>",
+      lunge: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'><circle cx='40' cy='20' r='5'/><path d='M40 25 L40 50 L65 50 L65 80 M40 50 L20 80'/></svg>",
+      plank: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'><circle cx='20' cy='45' r='5'/><path d='M25 50 L85 50 M30 50 L30 70 M75 50 L75 70'/></svg>",
+      walk: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%23f59e0b' stroke-width='4' stroke-linecap='round'><circle cx='50' cy='20' r='5'/><path d='M50 25 L50 55 L35 85 M50 55 L70 80 M50 35 L30 50 M50 35 L65 45'/></svg>",
+      pull: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'><path d='M20 30 L80 30' stroke='%2394a3b8'/><path d='M30 65 L70 35'/><circle cx='25' cy='70' r='5'/></svg>",
+      dips: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'><path d='M30 40 L30 85 M70 40 L70 85' stroke='%2394a3b8'/><circle cx='50' cy='25' r='5'/><path d='M50 30 L50 60 L30 45 M50 60 L70 45'/></svg>",
+      burpee: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'><circle cx='50' cy='15' r='5'/><path d='M50 20 L50 50 M30 30 L70 30 M20 80 L50 50 L80 80'/></svg>",
+      abs: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'><circle cx='25' cy='65' r='5'/><path d='M30 70 L60 70 L80 50'/></svg>",
+      rest: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%23f59e0b' stroke-width='4' stroke-linecap='round'><circle cx='50' cy='30' r='10'/><path d='M30 70 Q 50 50 70 70'/></svg>"
     };
 
     const baseSchedule = [
