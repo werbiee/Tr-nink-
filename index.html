@@ -82,14 +82,14 @@
       cursor: pointer;
     }
 
-    /* Exercise Item with Animated GIF */
+    /* Exercise Item with Larger Image */
     .exercise-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 0;
+      padding: 12px 0;
       border-bottom: 1px solid #334155;
-      gap: 10px;
+      gap: 12px;
     }
     .exercise-item:last-child { border-bottom: none; }
     
@@ -100,23 +100,24 @@
       flex: 1;
     }
     
-    .exercise-gif {
-      width: 58px;
-      height: 58px;
-      border-radius: 8px;
-      object-fit: cover;
+    .exercise-img {
+      width: 75px;
+      height: 75px;
+      border-radius: 10px;
+      object-fit: contain;
       background-color: #ffffff;
+      padding: 4px;
       border: 1px solid var(--accent-color);
       flex-shrink: 0;
     }
 
     .exercise-info { display: flex; flex-direction: column; }
-    .exercise-name { font-weight: 600; font-size: 14px; }
-    .exercise-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .exercise-name { font-weight: 600; font-size: 15px; }
+    .exercise-meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
     
     input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       accent-color: var(--success-color);
       cursor: pointer;
       flex-shrink: 0;
@@ -197,19 +198,19 @@
   <script>
     let currentWeek = 1;
 
-    // Stabilní přímé animace cviků z Wikimedia a Wikimedia Commons
-    const gifs = {
-      pushup: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Pushups.gif",
-      pike: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Pushups.gif",
-      squat: "https://upload.wikimedia.org/wikipedia/commons/8/82/Squats.gif",
-      lunge: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Lunges.gif",
-      plank: "https://upload.wikimedia.org/wikipedia/commons/a/a4/Plank_exercise.gif",
-      walk: "https://upload.wikimedia.org/wikipedia/commons/1/15/Walking_animation.gif",
-      pull: "https://upload.wikimedia.org/wikipedia/commons/8/85/Pullups.gif",
-      dips: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Dips.gif",
-      burpee: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Pushups.gif",
-      abs: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Crunches.gif",
-      rest: "https://upload.wikimedia.org/wikipedia/commons/1/15/Walking_animation.gif"
+    // Přímé stabilní obrázky znázorňující začátek a konec pohybu
+    const imgs = {
+      pushup: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Pushups/0.jpg",
+      pike: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Pike_Pushups/0.jpg",
+      squat: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Bodyweight_Squats/0.jpg",
+      lunge: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Lunges/0.jpg",
+      plank: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Plank/0.jpg",
+      walk: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Walking/0.jpg",
+      pull: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Inverted_Row/0.jpg",
+      dips: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Bench_Dips/0.jpg",
+      burpee: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Burpees/0.jpg",
+      abs: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Crunches/0.jpg",
+      rest: "https://raw.githubusercontent.com/yuhanas/free-exercise-db/main/exercises/Plank/0.jpg"
     };
 
     const baseSchedule = [
@@ -218,10 +219,10 @@
         day: "Pondělí: Vršek (Hrudník + Ramena)",
         isRest: false,
         exercises: [
-          { id: "d1_e1", name: "Kliky (střední šířka)", base: "3 série × 10 opakování", gif: gifs.pushup },
-          { id: "d1_e2", name: "Pike Push-ups (na ramena)", base: "3 série × 8 opakování", gif: gifs.pike },
-          { id: "d1_e3", name: "Široké kliky", base: "3 série × 10 opakování", gif: gifs.pushup },
-          { id: "d1_e4", name: "Plank (Prkno)", base: "3 série × 45 sekund", gif: gifs.plank }
+          { id: "d1_e1", name: "Kliky (střední šířka)", base: "3 série × 10 opakování", img: imgs.pushup },
+          { id: "d1_e2", name: "Pike Push-ups (na ramena)", base: "3 série × 8 opakování", img: imgs.pike },
+          { id: "d1_e3", name: "Široké kliky", base: "3 série × 10 opakování", img: imgs.pushup },
+          { id: "d1_e4", name: "Plank (Prkno)", base: "3 série × 45 sekund", img: imgs.plank }
         ]
       },
       {
@@ -229,10 +230,10 @@
         day: "Úterý: Spodek (Nohy + Střed těla)",
         isRest: false,
         exercises: [
-          { id: "d2_e1", name: "Hluboké dřepy", base: "3 série × 15 opakování", gif: gifs.squat },
-          { id: "d2_e2", name: "Výpady vzad", base: "3 série × 10 / noha", gif: gifs.lunge },
-          { id: "d2_e3", name: "Glute Bridge (Pánev)", base: "3 série × 15 opakování", gif: gifs.plank },
-          { id: "d2_e4", name: "Zvedání nohou v leže", base: "3 série × 12 opakování", gif: gifs.abs }
+          { id: "d2_e1", name: "Hluboké dřepy", base: "3 série × 15 opakování", img: imgs.squat },
+          { id: "d2_e2", name: "Výpady vzad", base: "3 série × 10 / noha", img: imgs.lunge },
+          { id: "d2_e3", name: "Glute Bridge (Pánev)", base: "3 série × 15 opakování", img: imgs.plank },
+          { id: "d2_e4", name: "Zvedání nohou v leže", base: "3 série × 12 opakování", img: imgs.abs }
         ]
       },
       {
@@ -240,8 +241,8 @@
         day: "Středa: Aktivní Odpočinek 🧘‍♂️",
         isRest: true,
         exercises: [
-          { id: "d3_e1", name: "Procházka na čerstvém vzduchu", base: "30–45 minut", gif: gifs.walk },
-          { id: "d3_e2", name: "Lehký strečink celého těla", base: "10–15 minut", gif: gifs.walk }
+          { id: "d3_e1", name: "Procházka na čerstvém vzduchu", base: "30–45 minut", img: imgs.walk },
+          { id: "d3_e2", name: "Lehký strečink celého těla", base: "10–15 minut", img: imgs.walk }
         ]
       },
       {
@@ -249,10 +250,10 @@
         day: "Čtvrtek: Vršek (Záda + Biceps + Triceps)",
         isRest: false,
         exercises: [
-          { id: "d4_e1", name: "Inverted Rows (Přítahy ručník/stůl)", base: "3 série × 10 opakování", gif: gifs.pull },
-          { id: "d4_e2", name: "Tricepsové kliky o židli (Dips)", base: "3 série × 12 opakování", gif: gifs.dips },
-          { id: "d4_e3", name: "Izometrický přítah v předklonu", base: "3 série × 30 sekund stisk", gif: gifs.pull },
-          { id: "d4_e4", name: "Boční plank", base: "3 série × 30s / strana", gif: gifs.plank }
+          { id: "d4_e1", name: "Inverted Rows (Přítahy ručník/stůl)", base: "3 série × 10 opakování", img: imgs.pull },
+          { id: "d4_e2", name: "Tricepsové kliky o židli (Dips)", base: "3 série × 12 opakování", img: imgs.dips },
+          { id: "d4_e3", name: "Izometrický přítah v předklonu", base: "3 série × 30 sekund stisk", img: imgs.pull },
+          { id: "d4_e4", name: "Boční plank", base: "3 série × 30s / strana", img: imgs.plank }
         ]
       },
       {
@@ -260,10 +261,10 @@
         day: "Pátek: Celé tělo + Kondice",
         isRest: false,
         exercises: [
-          { id: "d5_e1", name: "Angličáky (Burpees)", base: "3 série × 8 opakování", gif: gifs.pushup },
-          { id: "d5_e2", name: "Bulharské dřepy (noha vzadu)", base: "3 série × 8 / noha", gif: gifs.lunge },
-          { id: "d5_e3", name: "Horolezec (Mountain Climbers)", base: "3 série × 30 sekund", gif: gifs.plank },
-          { id: "d5_e4", name: "Zkracovačky na břicho", base: "3 série × 15 opakování", gif: gifs.abs }
+          { id: "d5_e1", name: "Angličáky (Burpees)", base: "3 série × 8 opakování", img: imgs.burpee },
+          { id: "d5_e2", name: "Bulharské dřepy (noha vzadu)", base: "3 série × 8 / noha", img: imgs.lunge },
+          { id: "d5_e3", name: "Horolezec (Mountain Climbers)", base: "3 série × 30 sekund", img: imgs.plank },
+          { id: "d5_e4", name: "Zkracovačky na břicho", base: "3 série × 15 opakování", img: imgs.abs }
         ]
       },
       {
@@ -271,8 +272,8 @@
         day: "Sobota: Lehké Kardio / Pohyb 🚶‍♂️",
         isRest: true,
         exercises: [
-          { id: "d6_e1", name: "Svižná procházka nebo kolo", base: "45–60 minut", gif: gifs.walk },
-          { id: "d6_e2", name: "Mobilita kyčlí a ramen", base: "10 minut", gif: gifs.walk }
+          { id: "d6_e1", name: "Svižná procházka nebo kolo", base: "45–60 minut", img: imgs.walk },
+          { id: "d6_e2", name: "Mobilita kyčlí a ramen", base: "10 minut", img: imgs.walk }
         ]
       },
       {
@@ -280,7 +281,7 @@
         day: "Neděle: Plný Odpočinek & Regenerace 💤",
         isRest: true,
         exercises: [
-          { id: "d7_e1", name: "Kvalitní spánek & Dobré jídlo", base: "Náběr sil do nového týdne", gif: gifs.rest }
+          { id: "d7_e1", name: "Kvalitní spánek & Dobré jídlo", base: "Náběr sil do nového týdne", img: imgs.rest }
         ]
       }
     ];
@@ -319,7 +320,7 @@
             return `
               <div class="exercise-item">
                 <div class="exercise-left">
-                  <img class="exercise-gif" src="${ex.gif}" alt="${ex.name}" />
+                  <img class="exercise-img" src="${ex.img}" alt="${ex.name}" />
                   <div class="exercise-info ${completedClass}">
                     <span class="exercise-name">${ex.name}</span>
                     <span class="exercise-meta">${metaText}</span>
